@@ -1,0 +1,370 @@
+import { useState } from 'react'
+
+import "./App.css";
+import { Navbar } from "./components/navbar";
+import { Taskboard } from './components/taskboard';
+import { Login } from './components/loginpage';
+import { BrowserRouter , Routes ,Route  , useNavigate} from "react-router-dom";
+import React from 'react';
+import { Homepage } from './components/homepage';
+function App() {
+  const [count, setCount] = useState(0)
+
+
+
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
+   function handleLoginSuccess ()  {
+  
+     setIsLoggedIn(true);
+  console.log(`hitted`);
+  console.log(isLoggedIn);
+
+
+
+  // navigate('/home');
+  };
+  return (
+    <>
+      <div className='App'>
+     
+      
+
+        <BrowserRouter >
+<Navbar />
+<Taskboard/>
+          <Routes>
+          {/* <Route path="/" element={<Taskboard />} /> */}
+          <Route path="/" element={isLoggedIn ? <Homepage/> : <Taskboard />} />
+          <Route path="/home" element={< Homepage />} /> 
+         
+          
+          </Routes>
+        </BrowserRouter>
+     
+      </div>
+    
+
+
+
+
+     
+    </>
+  )
+}
+
+export default App
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+import {Grid} from "@mui/material"
+import styles from './banner.module.css'
+
+import axios from 'axios';
+import TextField from '@mui/material/TextField';
+import { BrowserRouter , Routes ,Route  , useNavigate } from "react-router-dom";
+
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import { useEffect, useState } from 'react';
+import { Homepage } from "./homepage";
+
+
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+export function Login({modal = false, handlemodalClose =()=>{} , modaltype = "login"}){
+   console.log(`${modaltype} hit`);
+
+
+
+
+
+
+const defaultuserCredentials = {
+
+  Username : "",
+  password : "",
+  email : "",
+  phonenumber : 0,
+
+
+
+};
+const [userCredentials , setuserCredentials] = React.useState(defaultuserCredentials);
+const [redirectToHome, setRedirectToHome] = React.useState(true);
+
+
+
+ function handleClose(){
+
+
+ }
+    
+function handleregistration(buttontype){
+
+
+if(buttontype === 'registration'){
+
+console.log(userCredentials);
+
+axios({
+  method: 'post',
+  url: 'http://127.0.0.1:3000/createuser',
+  data: {
+   ...userCredentials
+  }
+});
+
+
+
+
+
+}
+else {
+
+  handlelogin(userCredentials);
+
+}
+
+}
+
+
+
+
+
+
+async function  handlelogin(userCredentials){
+
+ const navigate = useNavigate();
+
+  console.log(userCredentials);
+
+
+
+   const response = await axios({
+    method: 'post',
+    url: 'http://127.0.0.1:3000/login',
+    data: {
+     ...userCredentials
+    }
+  });
+  
+  try{
+ 
+    console.log(response.status
+
+    );
+
+
+if(response.status == 200){
+
+console.log(`valid userr`);
+
+navigate("/home");
+
+
+
+}
+
+else{
+
+console.log('invalid user');
+
+
+}
+
+
+
+  }
+catch(err){
+
+  // console.log(err.AxiosError);
+}
+
+
+
+
+
+}
+return(
+
+<>
+
+
+
+    <Grid container >
+   
+    <Modal
+  open={modal}
+  onClose={handleClose}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+  style={{height : "500px"} }
+>
+  <Box sx={style}>
+    <Typography id="modal-modal-title" variant="h6" component="h2">
+    {modaltype === "login" ? "Enter your credentials to log in" : "Enter your credentials to signup"}
+    </Typography>
+
+
+
+
+    <Grid item>
+    
+    <DialogContent>
+          
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="username"
+            name="Username"
+            label="Username"
+            type="email"
+            fullWidth
+            variant="standard"
+            onChange={(event)=>{
+
+              setuserCredentials({
+...userCredentials,
+Username : event.target.value ,
+
+              })
+              console.log(userCredentials);
+
+            }}
+          />
+
+           <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="password"
+            name="password"
+            label="password"
+            type="password"
+            fullWidth
+            variant="standard"
+            onChange={(event)=>{
+
+              setuserCredentials({
+...userCredentials,
+password : event.target.value ,
+
+              })
+
+            }}
+          />
+
+{ modaltype === 'registration' && (
+
+<>
+<TextField
+            autoFocus
+            required
+            margin="dense"
+            id="email"
+            name="email"
+            label="email"
+            type="email"
+            fullWidth
+            variant="standard"
+            onChange={(event)=>{
+
+              setuserCredentials({
+...userCredentials,
+email : event.target.value ,
+
+              })
+
+            }}
+          />
+
+
+
+<TextField
+            autoFocus
+            required
+            margin="dense"
+            id="phonenumber"
+            name="phonenumber"
+            label="phonenumber"
+            type="number"
+            fullWidth
+            variant="standard"
+            onChange={(event)=>{
+
+              setuserCredentials({
+...userCredentials,
+phonenumber : event.target.value ,
+
+              })
+console.log(userCredentials);
+            }}
+          />
+
+</>
+)
+
+}
+
+ 
+         
+        </DialogContent>
+ 
+    </Grid>
+
+
+    
+  
+
+  
+
+
+
+
+
+
+
+
+
+<DialogContent>
+
+<Button variant="contained" style={{marginRight : 4}} onClick={(e)=>{
+    handleregistration(modaltype)
+}
+}>{modaltype === "login" ? "login" : "signup"}</Button >
+<Button variant="contained" onClick={handlemodalClose}>close</Button>
+</DialogContent>
+
+
+        
+  </Box>
+</Modal>
+    </Grid>
+
+
+   
+
+</>)
+
+
+
+}
